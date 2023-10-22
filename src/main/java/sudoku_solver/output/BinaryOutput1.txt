@@ -1,0 +1,10 @@
+execute time: 1
+vars number: 648
+constraints number: 1723
+matrix result: 
+ 4  2  1  3  5  6 
+ 1  3  2  6  4  5 
+ 3  4  5  2  6  1 
+ 5  6  4  1  2  3 
+ 6  5  3  4  1  2 
+ 2  1  6  5  3  4 

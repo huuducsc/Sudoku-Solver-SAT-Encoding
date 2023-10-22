@@ -14,15 +14,19 @@ public class BinarySolver {
     public ISolver solver = SolverFactory.newDefault();
     public ArrayList<int[]> clauses = new ArrayList<int[]>();
     public ArrayList<int[]> input;
+    public long executionTime;
+    public int[][] result; ;
     BinarySolver(int matrixSize, ArrayList<int[]> input) throws ContradictionException {
         this.matrixSize = matrixSize;
         this.blockSize = (int) Math.sqrt(matrixSize);
         this.bitSize = log2(matrixSize - 1);
         this.input = input;
 
+        result = new int[matrixSize][matrixSize];
         for (int[] element : input) {
             solver.addClause(new VecInt(element));
         }
+
         this.generateFirstRuleClauses();
         this.generateSecondRuleClauses();
         this.generateThirdRuleClauses();
@@ -34,6 +38,7 @@ public class BinarySolver {
     }
 
     private void generateFirstRuleClauses() throws ContradictionException {
+        //AMO encoding: ensure each cell in matrix has at most one value
         for (int i = 1; i <= matrixSize; i++) {
             for (int j = 1; j <= matrixSize; j++) {
                 for (int k = 1; k <= matrixSize; k++) {
@@ -48,6 +53,7 @@ public class BinarySolver {
             }
         }
 
+        //ALO encoding: ensure each cell in matrix has at least one value
         for (int i = 1; i <= matrixSize; i++) {
             for (int j = 1; j <= matrixSize; j++) {
                 int[] ALOClause = new int[matrixSize];
@@ -88,7 +94,7 @@ public class BinarySolver {
     }
 
     private void generateThirdRuleClauses() throws ContradictionException {
-        //ensure each value exists at most one each row
+        //ensure each value exists at most one each column
         for (int j = 1; j <= matrixSize; j++) {
             for (int k = 1; k <= matrixSize; k++) {
                 for (int i = 1; i <= matrixSize; i++) {
@@ -103,7 +109,7 @@ public class BinarySolver {
             }
         }
 
-        //ensure each value exists at least one each row
+        //ensure each value exists at least one each column
         for (int j = 1; j <= matrixSize; j++) {
             for (int k = 1; k <= matrixSize; k++) {
                 int[] ALOClause = new int[matrixSize];
@@ -116,6 +122,7 @@ public class BinarySolver {
     }
 
     private void generateFourthRuleClauses() throws ContradictionException {
+        //ensure each value exists at least one each block
         for (int k = 1; k <= matrixSize; k++) {
             for (int bi = 1; bi <= blockSize; bi++) {
                 for (int bj = 1; bj <= blockSize; bj++) {
@@ -136,6 +143,7 @@ public class BinarySolver {
             }
         }
 
+        //ensure each value exists at least one each block
         for (int k = 1; k <= matrixSize; k++) {
             for (int bi = 1; bi <= blockSize; bi++) {
                 for (int bj = 1; bj <= blockSize; bj++) {
@@ -187,14 +195,13 @@ public class BinarySolver {
     }
 
     private void solve() throws ContradictionException {
-
         try {
             solver.newVar(matrixSize * matrixSize * matrixSize + 4 * matrixSize * matrixSize * bitSize);
 
             long startTime = System.currentTimeMillis();
             if (solver.isSatisfiable()) {
                 long endTime = System.currentTimeMillis(); // Record the end time
-                long executionTime = endTime - startTime;
+                executionTime = endTime - startTime;
                 System.out.print("Time: ");
                 System.out.println(executionTime);
                 logResults();
@@ -208,7 +215,6 @@ public class BinarySolver {
 
     public void logResults() {
         int[] model = solver.model();
-        int[][] result = new int[matrixSize][matrixSize];
         System.out.println(model.length);
         System.out.println(solver.nVars());
         int count = 1;

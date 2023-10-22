@@ -14,6 +14,7 @@ public class BionomialSolver {
     public ArrayList<int[]> clauses = new ArrayList<int[]>();
     public ArrayList<int[]> input;
     public int[][] result;
+    public long executionTime;
     BionomialSolver(int matrixSize, ArrayList<int[]> input) {
         this.matrixSize = matrixSize;
         this.blockSize = (int) Math.sqrt(matrixSize);
@@ -153,7 +154,7 @@ public class BionomialSolver {
             long startTime = System.currentTimeMillis();
             if (solver.isSatisfiable()) {
                 long endTime = System.currentTimeMillis(); // Record the end time
-                long executionTime = endTime - startTime;
+                executionTime = endTime - startTime;
                 System.out.print("Time: ");
                 System.out.println(executionTime);
                 logResults();
