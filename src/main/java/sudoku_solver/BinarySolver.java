@@ -15,7 +15,7 @@ public class BinarySolver {
     public ArrayList<int[]> clauses = new ArrayList<int[]>();
     public ArrayList<int[]> input;
     public long executionTime;
-    public int[][] result; ;
+    public int[][] result; 
     BinarySolver(int matrixSize, ArrayList<int[]> input) throws ContradictionException {
         this.matrixSize = matrixSize;
         this.blockSize = (int) Math.sqrt(matrixSize);

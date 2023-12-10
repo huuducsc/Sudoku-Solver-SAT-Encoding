@@ -18,12 +18,13 @@ public class SudokuMain {
         int numTest = 10;
         File summaryOutput = new File("src/main/java/sudoku_solver/output/SummaryResult.csv");
         BufferedWriter summaryWriter = new BufferedWriter(new FileWriter(summaryOutput));
-        summaryWriter.write("Test, Size, Bionomial, , ,Binary" + "\n");
-        summaryWriter.write(", , Variables, Clauses, Time, Variables, Clauses, Time" + "\n");
+        summaryWriter.write("Test, Size, Bionomial, , , Binary, , , Sequential" + "\n");
+        summaryWriter.write(", , Variables, Clauses, Time, Variables, Clauses, Time, Variables, Clauses, Time" + "\n");
         for (int i = 1; i <= numTest; i++) {
             int[][] inputMatrix = readInput("src/main/java/sudoku_solver/input/input" + i + ".txt");
             File bionomialOutput = new File("src/main/java/sudoku_solver/output/BionomialOutput" + i + ".txt");
             File binaryOutput = new File("src/main/java/sudoku_solver/output/BinaryOutput" + i + ".txt");
+            File sequentialOutput = new File("src/main/java/sudoku_solver/output/SequentialOutput" + i + ".txt");
 
             summaryWriter.write(i + "," + inputMatrix.length + ",");
 
@@ -38,6 +39,10 @@ public class SudokuMain {
                 );
                 summaryWriter.write(bionomialSolver.solver.nVars() + ","
                         + bionomialSolver.solver.nConstraints() + "," + bionomialSolver.executionTime + ",");
+
+                        
+                SequentialCounterSolver sc = new SequentialCounterSolver(inputMatrix.length, standardInput(inputMatrix));
+               
             } catch (OutOfMemoryError e) {
                 summaryWriter.write("out of memory, out of memory, out of memory, ");
             }
@@ -50,7 +55,20 @@ public class SudokuMain {
                     binarySolver.result
             );
             summaryWriter.write(binarySolver.solver.nVars() + ","
-                    + binarySolver.solver.nConstraints() + "," + binarySolver.executionTime + "\n");
+                    + binarySolver.solver.nConstraints() + "," + binarySolver.executionTime + ",");
+            try {
+                SequentialCounterSolver sc = new SequentialCounterSolver(inputMatrix.length, standardInput(inputMatrix));
+                writeOutput(
+                        sequentialOutput,
+                        sc.time,
+                        sc.variables,
+                        sc.clauses,
+                        sc.OutputMatrix
+                );
+                summaryWriter.write(sc.variables + ","+ sc.clauses + "," + sc.time + "\n");
+            } catch (OutOfMemoryError e) {
+                summaryWriter.write("out of memory, out of memory, out of memory\n");
+            }
         }
         summaryWriter.close();
     }
